@@ -15,6 +15,6 @@ class BCNode(Node):
         if self.x == node.x and self.y == node.y:
             return True
         else:
-        return False
+            return False
 
     

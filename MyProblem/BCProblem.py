@@ -94,7 +94,29 @@ class BCProblem(Problem):
     @staticmethod
     def GetCost(value):
         #TODO: debes darle un coste a cada tipo de casilla del mapa.
-        return sys.maxsize
+
+        if value == AgentConsts.NOTHING:
+            return 0
+        elif value == AgentConsts.UNBREAKABLE:
+            return 1
+        elif value == AgentConsts.BRICK:
+            return 2
+        elif value == AgentConsts.COMMAND_CENTER:
+            return 3
+        elif value == AgentConsts.PLAYER:
+            return 4
+        elif value == AgentConsts.SHELL:
+            return 5
+        elif value == AgentConsts.OTHER:
+            return 6
+        elif value == AgentConsts.LIFE:
+            return 7
+        elif value == AgentConsts.SEMI_BREKABLE:
+            return 8
+        elif value == AgentConsts.SEMI_UNBREKABLE:
+            return 9
+        else:
+            return sys.maxsize
     
     #crea un nodo y lo añade a successors (lista) con el padre indicado y la posición x,y en coordenadas mapa 
     def CreateNode(self,successors,parent,x,y):
