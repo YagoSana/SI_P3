@@ -39,9 +39,13 @@ class BCProblem(Problem):
 
     #Genera la lista de sucesores del nodo (Se necesita reimplementar)
     def GetSucessors(self, node):
+        print(node)
+        print(self)
         successors = []
-        #TODO: sucesores de un nodo dado
-        print("Aqui falta ncosas por hacer :) ")
+        successors[0] = {self.x, self.y + 1} #arriba
+        successors[1] = {self.x, self.y - 1} #abajo
+        successors[2] = {self.x + 1, self.y} #derecha
+        successors[3] = {self.x - 1, self.y} #izquierda
         return successors
     
     #métodos estáticos
