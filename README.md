@@ -1,7 +1,6 @@
 # SI_P3
-
+---
 ## Enunciado
-
 ### AStar.py:
     def GetPlan(self):
         findGoal = False
@@ -33,6 +32,7 @@
         return path
 
 ### BCNode.py:
+    ## DONE
     def IsEqual(self,node):
         #TODO: dos nodos son iguales cuando sus coordenadas x e y son iguales.
         return False
@@ -50,7 +50,8 @@
         #TODO: sucesores de un nodo dado
         print("Aqui falta ncosas por hacer :) ")
         return successors
-    
+
+    ##DONE    
     #se utiliza para calcular el coste de cada elemento del mapa
     @staticmethod
     def GetCost(value):
