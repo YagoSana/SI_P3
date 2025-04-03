@@ -44,6 +44,7 @@
         print("Aqui falta ncosas por hacer :) ")
         return 0
     
+    ##DONE
     #Genera la lista de sucesores del nodo (Se necesita reimplementar)
     def GetSucessors(self, node):
         successors = []
@@ -86,6 +87,7 @@
         #-Calcular el plan usando A*
         print("TODO aqui faltan cosas :)")
         return self.aStar.GetPlan()
+        
     #no podemos iniciarlo en el start porque no conocemos el mapa ni las posiciones de los o
     def InitAgent(self,perception,map):
         #creamos el problema

@@ -42,10 +42,10 @@ class BCProblem(Problem):
         print(node)
         print(self)
         successors = []
-        successors[0] = {self.x, self.y + 1} #arriba
-        successors[1] = {self.x, self.y - 1} #abajo
-        successors[2] = {self.x + 1, self.y} #derecha
-        successors[3] = {self.x - 1, self.y} #izquierda
+        successors[0] = {node.x, node.y + 1} #arriba
+        successors[1] = {node.x, node.y - 1} #abajo
+        successors[2] = {node.x + 1, node.y} #derecha
+        successors[3] = {node.x - 1, node.y} #izquierda
         return successors
     
     #métodos estáticos
