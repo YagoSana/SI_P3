@@ -38,6 +38,7 @@
         return False
 
 ### BCProblem.py:
+    ##DONE
     #Calcula la heuristica del nodo en base al problema planteado (Se necesita reimplementar
     def Heuristic(self, node):
         #TODO: heurística del nodo

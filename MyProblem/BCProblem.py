@@ -34,9 +34,16 @@ class BCProblem(Problem):
     #Calcula la heuristica del nodo en base al problema planteado (Se necesita reimplementar)
     def Heuristic(self, node):
         #TODO: heurística del nodo
-        print("Aqui falta ncosas por hacer :) ")
-        return 0
+        
+        #nodo actual
+        x1, y1 = node.x, node.y
+        #nodo objetivo
+        x2, y2 = self.goal.x, self.goal.y
 
+        #devolver dist
+        return abs(x1 - x2) + abs(y1 - y2)
+
+    #TODO: ##DONE
     #Genera la lista de sucesores del nodo (Se necesita reimplementar)
     def GetSucessors(self, node):
         print(node)
@@ -97,7 +104,8 @@ class BCProblem(Problem):
     #se utiliza para calcular el coste de cada elemento del mapa 
     @staticmethod
     def GetCost(value):
-        #TODO: debes darle un coste a cada tipo de casilla del mapa.
+        #TODO: ##DONE 
+        #debes darle un coste a cada tipo de casilla del mapa.
 
         if value == AgentConsts.NOTHING:
             return 0
