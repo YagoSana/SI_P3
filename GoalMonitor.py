@@ -3,7 +3,7 @@ from States.AgentConsts import AgentConsts
 
 class GoalMonitor:
 
-    GOAL_COMMAND_CENTRER = 0
+    GOAL_COMMAND_CENTER = 0
     GOAL_LIFE = 1
     GOAL_PLAYER = 2
     def __init__(self, problem, goals):
@@ -25,16 +25,14 @@ class GoalMonitor:
         return False
     
     #selecciona la meta mas adecuada al estado actual
-    def SelectGoal(self, perception, map, agent):9
-        #TODO definir la estrategia del cambio de meta
-    print("TODO aqui faltan cosas :)")
-    if abs(perception[PLAYER_X]-perception[AGENT_X])<6 and  abs(perception[PLAYER_Y]-perception[AGENT_X])<6:
-        return self.goals[GOAL_PLAYER]
-    elif perception[HEALTH]<2: #Vida 
-        return self.goals[GOAL_LIFE]
-    else:
-        return self.goals[GOAL_COMMAND_CENTER]
+    def SelectGoal(self, perception, map, agent):
+        print("TODO aqui faltan cosas :)")
+        if abs(perception[PLAYER_X]-perception[AGENT_X])<6 and abs(perception[PLAYER_Y]-perception[AGENT_X])<6:
+            return self.goals[GOAL_PLAYER]
+        elif perception[HEALTH]<2: #Vida 
+            return self.goals[GOAL_LIFE]
+        else:
+            return self.goals[GOAL_COMMAND_CENTER]
 
-    
     def UpdateGoals(self,goal, goalId):
         self.goals[goalId] = goal
