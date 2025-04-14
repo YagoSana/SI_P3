@@ -27,7 +27,9 @@ class ExecutePlan(State):
             self.noMovements += 1
         else:
             self.noMovements = 0
+
         x,y = BCProblem.WorldToMapCoordFloat(xW,yW,agent.problem.ySize)
+
         # si estas en el nodo = lo elimino para poder seguir con el siguiente, si me quedo sin nodos, es que he llegado ahora me puede interesar quedarme a 2 nodos.
         plan = agent.GetPlan()
         if len(plan) == 0 : # no tengo un plan para conseguir mis objetivos, me quedo quieto.
@@ -48,9 +50,11 @@ class ExecutePlan(State):
             move = self.GetDirection(nextNode,x,y)
             agent.directionToLook = move-1 ## la percepción es igual que el movimiento pero restando 1                
             shot = self.lastMove == move and perception[AgentConsts.CAN_FIRE] == 1
+            print(f"Shot: {shot}, self.LastMove: {self.lastMove}, move: {move} percep: {perception[AgentConsts.CAN_FIRE]}")
         else:
             move = self.GetDirection(nextNode,x,y)
             shot = nextNode.value == AgentConsts.BRICK or nextNode.value == AgentConsts.COMMAND_CENTER
+            print(f"Shot: {shot}, nextNode.value: {nextNode.value}, VALOR BRICK: {AgentConsts.BRICK}")
         self.lastMove = move
         return move, shot
 
@@ -123,4 +127,3 @@ class ExecutePlan(State):
         else:
             return AgentConsts.NO_MOVE
             #me muevo en la dirección donde haya mas diferencia
-
