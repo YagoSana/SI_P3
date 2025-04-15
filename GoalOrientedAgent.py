@@ -82,6 +82,7 @@ class GoalOrientedAgent(BaseAgent):
         
     @staticmethod
     def CreateNodeByPerception(perception, value, perceptionID_X, perceptionID_Y,ySize):
+      
         xMap, yMap = BCProblem.WorldToMapCoord(perception[perceptionID_X],perception[perceptionID_Y],ySize)
         newNode = BCNode(None,BCProblem.GetCost(value),value,xMap,yMap)
         return newNode

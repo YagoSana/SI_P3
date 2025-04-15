@@ -1,68 +1,68 @@
-
-
-#Algoritmo A* genérico que resuelve cualquier problema descrito usando la plantilla de la
-#la calse Problem que tenga como nodos hijos de la clase Node
 class AStar:
-
     def __init__(self, problem):
-
-        #INFORMACION RELEVANTE
-        #OPEN: Es una frontera, es decir, contiene los nodos pendientes de explorar
-        #PROCESSED: Contiene los nodos que ya fueron procesados 
-        
-        self.open = [] # lista de abiertos o frontera de exploración
-        self.precessed = set() # set, conjunto de cerrados (más eficiente que una lista)
-        self.problem = problem #problema a resolver
+        self.open = []               # frontera (lista de nodos por explorar)
+        self.processed = set()       # conjunto de nodos explorados (por coordenadas)
+        self.problem = problem       # instancia del problema (que sabe cómo expandir, calcular H, etc.)
 
     def GetPlan(self):
-        findGoal = False
-        #TODO implementar el algoritmo A*
-        #cosas a tener en cuenta:
-        #Si el número de sucesores es 0 es que el algoritmo no ha encontrado una solución, devolvemos el path vacio []
-        #Hay que invertir el path para darlo en el orden correcto al devolverlo (path[::-1])
-        #GetSucesorInOpen(sucesor) nos devolverá None si no lo encuentra, si lo encuentra
-        #es que ese sucesor ya está en la frontera de exploración, DEBEMOS MIRAR SI EL NUEVO COSTE ES MENOR QUE EL QUE TENIA ALMACENADO
-        #SI esto es asi, hay que cambiarle el padre y setearle el nuevo coste.
-
         self.open.clear()
-        self.precessed.clear()
-        self.open.append(self.problem.Initial())
+        self.processed.clear()
         path = []
-        
-        #mientras no encontremos la meta y haya elementos en open....
-        #TODO implementar el bucle de búsqueda del algoritmo A*
 
-        return path
+        # Nodo inicial
+        start_node = self.problem.Initial()
+        self._ConfigureNode(start_node, None, 0)
+        self.open.append(start_node)
 
-    #nos permite configurar un nodo (node) con el padre y la nueva G
+        while self.open:
+            # Ordenar por F (g + h)
+            self.open.sort(key=lambda n: n.F())
+            current = self.open.pop(0)
+
+            if self.problem.IsASolution(current):
+                return self.ReconstructPath(current)
+
+            # Marcamos la posición como procesada
+            self.processed.add((current.x, current.y))
+
+            successors = self.problem.GetSucessors(current)
+
+            if not successors:
+                return []  # No hay solución
+
+            for successor in successors:
+                if (successor.x, successor.y) in self.processed:
+                    continue
+
+                newG = current.G() + self.problem.GetGCost(successor)
+                old = self.GetSucesorInOpen(successor)
+
+                if old is None:
+                    # Nuevo nodo → configurar y agregar
+                    self._ConfigureNode(successor, current, newG)
+                    self.open.append(successor)
+                else:
+                    # Nodo ya estaba en open → mejorar si es posible
+                    if newG < old.G():
+                        self._ConfigureNode(old, current, newG)
+
+        return []  # No se encontró solución
+
     def _ConfigureNode(self, node, parent, newG):
         node.SetParent(parent)
         node.SetG(newG)
-        #TODO Setearle la heuristica que está implementada en el problema. (si ya la tenía será la misma pero por si reutilizais este método para otras cosas)
+        node.SetH(self.problem.Heuristic(node))  # importante: actualizar la heurística
 
-    #nos dice si un sucesor está en abierta. Si esta es que ya ha sido expandido y tendrá un coste, comprobar que le nuevo camino no es más eficiente
-    #En caso de serlos, _ConfigureNode para setearle el nuevo padre y el nuevo G, asi como su heurística
-    def GetSucesorInOpen(self,sucesor):
-        i = 0
-        found = None
-        while found == None and i < len(self.open):
-            node = self.open[i]
-            i += 1
+    def GetSucesorInOpen(self, sucesor):
+        for node in self.open:
             if node.IsEqual(sucesor):
-                found = node
-        return found
+                return node
+        return None
 
-
-    #reconstruye el path desde la meta encontrada.
     def ReconstructPath(self, goal):
         path = []
-        #TODO: DONETE
         aux = goal
-        while goal is not None:
+        while aux is not None:
             path.append(aux)
-            aux= aux.getParent()
-
-        return path[::-1] #Se utiliza para invertir el path
-
-
-
+            aux = aux.GetParent()
+        return path[::-1]

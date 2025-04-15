@@ -45,15 +45,23 @@ class BCProblem(Problem):
 
     #TODO: ##DONE
     #Genera la lista de sucesores del nodo (Se necesita reimplementar)
+
     def GetSucessors(self, node):
-        print(node)
-        print(self)
         successors = []
-        successors[0] = {node.x, node.y + 1} #arriba
-        successors[1] = {node.x, node.y - 1} #abajo
-        successors[2] = {node.x + 1, node.y} #derecha
-        successors[3] = {node.x - 1, node.y} #izquierda
+        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # arriba, abajo, derecha, izquierda
+
+        for dx, dy in directions:
+            new_x = node.x + dx
+            new_y = node.y + dy
+
+            # Comprobamos que las coordenadas estén dentro del mapa
+            if 0 <= new_x < self.xSize and 0 <= new_y < self.ySize:
+                value = self.map[new_x][new_y]
+                if BCProblem.CanMove(value):
+                    self.CreateNode(successors, node, new_x, new_y)
+
         return successors
+
     
     #métodos estáticos
     #nos dice si podemos movernos hacia una casilla, se debe poner el valor de la casilla como

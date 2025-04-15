@@ -1,6 +1,6 @@
 from Node import Node
 
-class RenNode(Node):
+class ReNode(Node):
     def __init__(self, parent, g, state):
         super().__init__(parent, g)
         self.state = state  #Estado especifico del nodo
