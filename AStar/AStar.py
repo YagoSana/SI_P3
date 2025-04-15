@@ -5,6 +5,11 @@
 class AStar:
 
     def __init__(self, problem):
+
+        #INFORMACION RELEVANTE
+        #OPEN: Es una frontera, es decir, contiene los nodos pendientes de explorar
+        #PROCESSED: Contiene los nodos que ya fueron procesados 
+        
         self.open = [] # lista de abiertos o frontera de exploración
         self.precessed = set() # set, conjunto de cerrados (más eficiente que una lista)
         self.problem = problem #problema a resolver
@@ -26,6 +31,7 @@ class AStar:
         
         #mientras no encontremos la meta y haya elementos en open....
         #TODO implementar el bucle de búsqueda del algoritmo A*
+
         return path
 
     #nos permite configurar un nodo (node) con el padre y la nueva G
@@ -50,8 +56,13 @@ class AStar:
     #reconstruye el path desde la meta encontrada.
     def ReconstructPath(self, goal):
         path = []
-        #TODO: devuelve el path invertido desde la meta hasta que el padre sea None.
-        return path
+        #TODO: DONETE
+        aux = goal
+        while goal is not None:
+            path.append(aux)
+            aux= aux.getParent()
+
+        return path[::-1] #Se utiliza para invertir el path
 
 
 
