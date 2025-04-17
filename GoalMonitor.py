@@ -1,10 +1,12 @@
 import random
-from States.AgentConsts import *
+from States.AgentConsts import AgentConsts
 class GoalMonitor:
 
     GOAL_COMMAND_CENTER = 0
     GOAL_LIFE = 1
     GOAL_PLAYER = 2
+    GOAL_NPC=3 #MATAR AL OTRO AGENTE PORQUE ME MOLESTA MUCHISIMO
+    GOAL_COVER=4 #BUSCAR COVERTURA PARA QUE NO ME MATEN Y TAL
  
 
     def __init__(self, problem, goals):
@@ -18,20 +20,30 @@ class GoalMonitor:
 
     #determina si necesitamos replanificar
     def NeedReplaning(self, perception, map, agent):
-        if self.recalculate:
-            self.lastTime = perception[AgentConsts.TIME]
+        #Se ha detectado una bala y por lo tanto debemos actuar en consecuencia
+        if perception[AgentConsts.NEIGHBORHOOD_RIGHT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_LEFT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_UP]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_DOWN]==AgentConsts.SHELL:
             return True
-        #TODO definir la estrategia de cuando queremos recalcular
-        #puede ser , por ejemplo cada cierto tiempo o cuanod tenemos poca vida.
+        elif perception[AgentConsts.HEALTH]<2: #Vida 
+            return self.goals[self.GOAL_LIFE]
+        elif abs(perception[AgentConsts.PLAYER_X]-perception[AgentConsts.AGENT_X])<6 and abs(perception[AgentConsts.PLAYER_Y]-perception[AgentConsts.AGENT_Y])<6:
+            return True
+        
         return False
     
     #selecciona la meta mas adecuada al estado actual
     def SelectGoal(self, perception, map, agent):
-        print("TODO aqui faltan cosas :)")
-        if abs(perception[AgentConsts.PLAYER_X]-perception[AgentConsts.AGENT_X])<6 and abs(perception[AgentConst.PLAYER_Y]-perception[AgentConsts.AGENT_Y])<6:
+        if (perception[AgentConsts.NEIGHBORHOOD_RIGHT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_LEFT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_UP]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_DOWN]==AgentConsts.SHELL) and perception[AgentConsts.CAN_ATTACK]==AgentConsts.SHELL:
+            return self.goals[GOAL_PLAYER]
+
+        #if (perception[NEIGHBORHOOD_RIGHT]==SHELL or perception[NEIGHBORHOOD_LEFT]==SHELL or perception[NEIGHBORHOOD_UP]==SHELL or perception[NEIGHBORHOOD_DOWN]==SHELL) and perception[CAN_ATTACK]!=SHELL:
+           # return self.goals[4]
+
+        if abs(perception[AgentConsts.PLAYER_X]-perception[AgentConsts.AGENT_X])<6 and abs(perception[AgentConsts.PLAYER_Y]-perception[AgentConsts.AGENT_Y])<6:
             return self.goals[self.GOAL_PLAYER]
+
         elif perception[AgentConsts.HEALTH]<2: #Vida 
             return self.goals[self.GOAL_LIFE]
+            
         else:
             return self.goals[self.GOAL_COMMAND_CENTER]
 

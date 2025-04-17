@@ -8,6 +8,7 @@ from MyProblem.BCProblem import BCProblem
 from States.AgentConsts import AgentConsts
 from States.Attack import Attack
 from States.RandomMovement import RandomMovement
+from States.DistanceAttack import DistanceAttack
 
 #implementación de un agente básico basado en objetivos.
 #disponemos de la clase GoalMonitor que nos monitorea y replanifica cada cierto tiempo
@@ -18,9 +19,9 @@ class GoalOrientedAgent(BaseAgent):
         dictionary = {
         "ExecutePlan" : ExecutePlan("ExecutePlan"),
         "Attack" : Attack("Attack"),
-        "RandomMovement" : RandomMovement("RandomMovement")
+        "RandomMovement" : RandomMovement("RandomMovement"),
+        "DistanceAttack" : DistanceAttack("DistanceAttack")
         }
-        
         self.stateMachine = StateMachine("GoalOrientedBehavior",dictionary,"ExecutePlan")
         self.problem = None
         self.aStar = None
@@ -62,23 +63,37 @@ class GoalOrientedAgent(BaseAgent):
         return action, shot
     
     #método interno que encapsula la creación de un plan
-    def _CreatePlan(self,perception,map):
+    def _CreatePlan(self, perception, map):
+        # Se obtiene la meta actual
         currentGoal = self.problem.GetGoal()
-        node = self._CreateInitialNode(perception)
-        self.problem.InitMap(map)
 
+        # Solo volvemos a calcular el plan si la meta o el mapa han cambiado
         if self.goalMonitor != None:
-            #TODO creamos un plan, pasos:
-            #-establecer la meta actual al problema para que A* sepa cual es.
-            #-Calcular el plan usando A*
-            currentGoal=self.problem.GetGoal()
-            currentGoal= self.goalMonitor.SelectGoal(perception, map, self) #Miramos cual es el objetivo actual
-            self.problem.SetGoal(currentGoal) #Indicamos el nuevo objetivo
-            self.problem.inital=node #Actualizamos la informacion con el nodo actual
-            self.aStar= AStar(self.problem) #Recalculamos el algoritmo A estrella
+            # Verificamos si necesitamos seleccionar un nuevo objetivo
+            newGoal = self.goalMonitor.SelectGoal(perception, map, self)
+            
+            # Si el objetivo ha cambiado, actualizamos la meta
+            if newGoal != currentGoal:
+                print(f"Meta cambiada de {currentGoal} a {newGoal}")
+                self.problem.SetGoal(newGoal)  # Establecemos el nuevo objetivo
+                self.problem.InitMap(map)  # Refrescamos el mapa
+                
+                # Creamos el nuevo nodo inicial basado en la percepción actual
+                node = self._CreateInitialNode(perception)
+                self.problem.initial = node  # Actualizamos la información del nodo inicial
 
+                # Recalculamos el plan utilizando A* con el nuevo objetivo y nodo inicial
+                self.aStar = AStar(self.problem)
+                self.plan = self.aStar.GetPlan()
+            else:
+                # Si no hay cambios, mantenemos el plan actual
+                print(f"Manteniendo el plan actual con la meta {currentGoal}")
+        else:
+            # Si no tenemos un GoalMonitor, simplemente mantenemos el plan actual
+            print(f"Sin GoalMonitor, manteniendo el plan actual con la meta {currentGoal}")
 
-            return self.aStar.GetPlan()
+        return self.plan
+
         
     @staticmethod
     def CreateNodeByPerception(perception, value, perceptionID_X, perceptionID_Y,ySize):
