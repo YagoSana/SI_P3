@@ -20,7 +20,7 @@ class GoalMonitor:
 
     #determina si necesitamos replanificar
     def NeedReplaning(self, perception, map, agent):
-        self.ticks+=1
+        self.ticks+=1 #Literalmente el tanque de repente es un NPC del Minecraft
         #Se ha detectado una bala y por lo tanto debemos actuar en consecuencia
         if perception[AgentConsts.NEIGHBORHOOD_RIGHT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_LEFT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_UP]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_DOWN]==AgentConsts.SHELL:
             return True
