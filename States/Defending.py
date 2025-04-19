@@ -1,91 +1,87 @@
 from StateMachine.State import State
 from States.AgentConsts import AgentConsts
-import random
 
+class Defending(State):
 
-#La ultima opcion deberia ser acercarse hacia la bala si no podemos disparar, en casos extremos nos moveremos en direccion contraria a ella, buscaremos siempre un hueco para esquivarla
-def defending(self, perception):
-    print("Me estoy defendiendo")
-    direccion_bala = -1
-    direcciones_vacias = []
+    def __init__(self, id):
+        super().__init__(id)
+        self.last_move = AgentConsts.NO_MOVE
+        self.directionToLook = -1
 
-    # Buscar la dirección de la bala y las direcciones vacías
-    for i, moves in enumerate(directions):
-        if perception[moves] == AgentConsts.SHELL:
-            print("BALA DETECTADA")
-            direccion_bala = i  # Dirección de la bala
+    def Update(self, perception, map, agent):
+        # Detectar la dirección de la bala
+        direccion_bala = -1
+        for i, move in enumerate([AgentConsts.NEIGHBORHOOD_UP, AgentConsts.NEIGHBORHOOD_DOWN, 
+                                  AgentConsts.NEIGHBORHOOD_LEFT, AgentConsts.NEIGHBORHOOD_RIGHT]):
+            if perception[move] == AgentConsts.SHELL:
+                direccion_bala = i  # Dirección de la bala detectada
+                self.directionToLook = direccion_bala
+                print("BALA DETECTADA")
 
-            #review
-            self.status = AgentConsts.DEFENDING
+        # Verificar si el agente ya está en la posición adecuada para disparar
+        if direccion_bala != -1 and perception[AgentConsts.CAN_FIRE] == 1:
+            print("Disparando a la bala")
+            return self.ShootAtBullet(perception, direccion_bala)
 
-        elif perception[moves] == AgentConsts.NOTHING:
-            direcciones_vacias.append(i)  # Guardamos las direcciones vacías
+        # Si no podemos disparar, intentar esquivar la bala o mover en la dirección opuesta
+        if direccion_bala != -1 and perception[AgentConsts.CAN_FIRE] == 0:
+            return self.EvadeBullet(perception, direccion_bala)
 
-    # Si encontramos una bala y no podemos disparar, intentamos esquivarla
-    if direccion_bala != -1 and perception[AgentConsts.CAN_FIRE] == 0:
+        # Si no hay amenaza, permanecemos en el lugar
+        return AgentConsts.NO_MOVE, 0
+
+    def Transit(self, perception, map):
+        # Si no hay bala o si ya no estamos en defensa, volvemos al estado de plan de ejecución
+        if self.last_move == AgentConsts.NO_MOVE:
+            return "ExecutePlan"
+        return self.id
+
+    def ShootAtBullet(self, perception, direccion_bala):
+        """Intentamos disparar a la bala si estamos en posición."""
+        print("Agente en posición para disparar")
+        # Aquí se puede implementar la lógica para disparar directamente si el agente está en la posición correcta
+        return AgentConsts.NO_MOVE, 1  # Retorna un movimiento nulo pero indica que disparó (1)
+
+    def EvadeBullet(self, perception, direccion_bala):
+        """Intentamos esquivar la bala si no podemos disparar."""
         if direccion_bala == AgentConsts.NEIGHBORHOOD_DOWN:
-            if perception[AgentConsts.NEIGHBORHOOD_LEFT] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_LEFT
-                return AgentConsts.MOVE_LEFT, 0
-            elif perception[AgentConsts.NEIGHBORHOOD_RIGHT] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_RIGHT
-                return AgentConsts.MOVE_RIGHT, 0
-            elif perception[AgentConsts.NEIGHBORHOOD_UP] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_UP
-                return AgentConsts.MOVE_UP, 0
-        elif direccion_bala == AgentConsts.NEIGHBORHOOD_UP:
-            if perception[AgentConsts.NEIGHBORHOOD_LEFT] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_LEFT
-                return AgentConsts.MOVE_LEFT, 0
-            elif perception[AgentConsts.NEIGHBORHOOD_RIGHT] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_RIGHT
-                return AgentConsts.MOVE_RIGHT, 0
-            elif perception[AgentConsts.NEIGHBORHOOD_DOWN] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_DOWN
-                return AgentConsts.MOVE_DOWN, 0
-        elif direccion_bala == AgentConsts.NEIGHBORHOOD_LEFT:
-            if perception[AgentConsts.NEIGHBORHOOD_UP] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_UP
-                return AgentConsts.MOVE_UP, 0
-            elif perception[AgentConsts.NEIGHBORHOOD_DOWN] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_DOWN
-                return AgentConsts.MOVE_DOWN, 0
-            elif perception[AgentConsts.NEIGHBORHOOD_RIGHT] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_RIGHT
-                return AgentConsts.MOVE_RIGHT, 0
-        elif direccion_bala == AgentConsts.NEIGHBORHOOD_RIGHT:
-            if perception[AgentConsts.NEIGHBORHOOD_UP] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_UP
-                return AgentConsts.MOVE_UP, 0
-            elif perception[AgentConsts.NEIGHBORHOOD_DOWN] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_DOWN
-                return AgentConsts.MOVE_DOWN, 0
-            elif perception[AgentConsts.NEIGHBORHOOD_LEFT] == AgentConsts.NOTHING:
-                self.last_move = AgentConsts.MOVE_LEFT
-                return AgentConsts.MOVE_LEFT, 0
+            return self.TryMove(perception, AgentConsts.NEIGHBORHOOD_LEFT, AgentConsts.MOVE_LEFT) or \
+                   self.TryMove(perception, AgentConsts.NEIGHBORHOOD_RIGHT, AgentConsts.MOVE_RIGHT) or \
+                   self.TryMove(perception, AgentConsts.NEIGHBORHOOD_UP, AgentConsts.MOVE_UP)
 
-    # Si no podemos esquivar, intentamos movernos en la dirección opuesta a la bala
-    if direccion_bala in [AgentConsts.NEIGHBORHOOD_UP, AgentConsts.NEIGHBORHOOD_DOWN, AgentConsts.NEIGHBORHOOD_LEFT, AgentConsts.NEIGHBORHOOD_RIGHT]:
+        elif direccion_bala == AgentConsts.NEIGHBORHOOD_UP:
+            return self.TryMove(perception, AgentConsts.NEIGHBORHOOD_LEFT, AgentConsts.MOVE_LEFT) or \
+                   self.TryMove(perception, AgentConsts.NEIGHBORHOOD_RIGHT, AgentConsts.MOVE_RIGHT) or \
+                   self.TryMove(perception, AgentConsts.NEIGHBORHOOD_DOWN, AgentConsts.MOVE_DOWN)
+
+        elif direccion_bala == AgentConsts.NEIGHBORHOOD_LEFT:
+            return self.TryMove(perception, AgentConsts.NEIGHBORHOOD_UP, AgentConsts.MOVE_UP) or \
+                   self.TryMove(perception, AgentConsts.NEIGHBORHOOD_DOWN, AgentConsts.MOVE_DOWN) or \
+                   self.TryMove(perception, AgentConsts.NEIGHBORHOOD_RIGHT, AgentConsts.MOVE_RIGHT)
+
+        elif direccion_bala == AgentConsts.NEIGHBORHOOD_RIGHT:
+            return self.TryMove(perception, AgentConsts.NEIGHBORHOOD_UP, AgentConsts.MOVE_UP) or \
+                   self.TryMove(perception, AgentConsts.NEIGHBORHOOD_DOWN, AgentConsts.MOVE_DOWN) or \
+                   self.TryMove(perception, AgentConsts.NEIGHBORHOOD_LEFT, AgentConsts.MOVE_LEFT)
+
+        return AgentConsts.NO_MOVE, 0
+
+    def MoveAwayFromBullet(self, perception, direccion_bala):
+        """Si no podemos esquivar, intentamos movernos en la dirección opuesta a la bala."""
         if direccion_bala == AgentConsts.NEIGHBORHOOD_UP and perception[AgentConsts.NEIGHBORHOOD_DOWN] == AgentConsts.NOTHING:
-            self.last_move = AgentConsts.MOVE_DOWN
             return AgentConsts.MOVE_DOWN, 0
         elif direccion_bala == AgentConsts.NEIGHBORHOOD_DOWN and perception[AgentConsts.NEIGHBORHOOD_UP] == AgentConsts.NOTHING:
-            self.last_move = AgentConsts.MOVE_UP
             return AgentConsts.MOVE_UP, 0
         elif direccion_bala == AgentConsts.NEIGHBORHOOD_LEFT and perception[AgentConsts.NEIGHBORHOOD_RIGHT] == AgentConsts.NOTHING:
-            self.last_move = AgentConsts.MOVE_RIGHT
             return AgentConsts.MOVE_RIGHT, 0
         elif direccion_bala == AgentConsts.NEIGHBORHOOD_RIGHT and perception[AgentConsts.NEIGHBORHOOD_LEFT] == AgentConsts.NOTHING:
-            self.last_move = AgentConsts.MOVE_LEFT
             return AgentConsts.MOVE_LEFT, 0
-    
-    # Si no hay escapatoria, giramos hacia la dirección de la bala y disparamos
-    if direccion_bala != -1:
-        print("No hay escapatoria, girando hacia la bala y disparando")
-        self.status = AgentConsts.ATTACKING
-        self.last_move = AgentConsts.DIRECTIONS[direccion_bala]
-        return AgentConsts.DIRECTIONS[direccion_bala], AgentConsts.ACTION_FIRE  # Girar hacia la bala y disparar
 
-    # Si no hay amenaza, permanecemos en el lugar y cambiamos al modo attacking para seguir pendiente de amenazas
-    self.status = AgentConsts.ATTACKING
-    return 0, AgentConsts.NOTHING
+        return AgentConsts.NO_MOVE, 0
+
+    def TryMove(self, perception, direction, move):
+        """Intenta mover en la dirección indicada si está libre."""
+        if perception[direction] == AgentConsts.NOTHING:
+            self.last_move = move
+            return move, 0
+        return AgentConsts.NO_MOVE, 0

@@ -9,6 +9,7 @@ from States.AgentConsts import AgentConsts
 from States.Attack import Attack
 from States.AttackShell import AttackShell
 from States.RandomMovement import RandomMovement
+from States.Defending import Defending
 
 
 #implementación de un agente básico basado en objetivos.
@@ -21,7 +22,8 @@ class GoalOrientedAgent(BaseAgent):
         "ExecutePlan" : ExecutePlan("ExecutePlan"),
         "Attack" : Attack("Attack"),
         "AttackShell" : AttackShell("AttackShell"),
-        "RandomMovement" : RandomMovement("RandomMovement")
+        "RandomMovement" : RandomMovement("RandomMovement"),
+        "Defending": Defending("Defending")
         }
         self.stateMachine = StateMachine("GoalOrientedBehavior",dictionary,"ExecutePlan")
         self.problem = None

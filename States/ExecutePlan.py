@@ -2,7 +2,6 @@ from StateMachine.State import State
 from States.AgentConsts import AgentConsts
 from MyProblem.BCProblem import BCProblem
 
-
 class ExecutePlan(State):
 
     def __init__(self, id):
@@ -28,7 +27,7 @@ class ExecutePlan(State):
         else:
             self.noMovements = 0
 
-        # Detección de SHELLs en línea para entrar en modo ataque
+        # Detección de SHELLs en línea para entrar en modo defensa
         bullet_directions = [
             (AgentConsts.NEIGHBORHOOD_UP, 1),
             (AgentConsts.NEIGHBORHOOD_DOWN, 2),
@@ -37,9 +36,10 @@ class ExecutePlan(State):
         ]
         for bullet, dir_val in bullet_directions:
             if perception[bullet] == AgentConsts.SHELL:
-                self.transition = "AttackShell"
+                self.transition = "AttackShell"  # Transición al estado de defensa
                 agent.directionToLook = dir_val
-                return AgentConsts.NO_MOVE, True
+                print("BALA DETECTADA, pasando a Defend")
+                return dir_val, True
 
         x, y = BCProblem.WorldToMapCoordFloat(xW, yW, agent.problem.ySize)
 
