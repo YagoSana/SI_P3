@@ -39,3 +39,9 @@ class AgentConsts:
     LIFE = 7
     SEMI_BREKABLE = 8
     SEMI_UNBREKABLE = 9
+
+    #estados
+    ATTACKING = 0
+    DEFENDING = 1
+    MOVING = 2
+    EXECUTING = 3
