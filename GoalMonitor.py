@@ -32,7 +32,7 @@ class GoalMonitor:
     
     #selecciona la meta mas adecuada al estado actual
     def SelectGoal(self, perception, map, agent):
-        if (perception[AgentConsts.NEIGHBORHOOD_RIGHT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_LEFT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_UP]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_DOWN]==AgentConsts.SHELL) and perception[AgentConsts.CAN_ATTACK]==AgentConsts.SHELL:
+        if (perception[AgentConsts.NEIGHBORHOOD_RIGHT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_LEFT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_UP]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_DOWN]==AgentConsts.SHELL) and perception[AgentConsts.CAN_FIRE]==AgentConsts.SHELL:
             return self.goals[GOAL_PLAYER]
 
         #if (perception[NEIGHBORHOOD_RIGHT]==SHELL or perception[NEIGHBORHOOD_LEFT]==SHELL or perception[NEIGHBORHOOD_UP]==SHELL or perception[NEIGHBORHOOD_DOWN]==SHELL) and perception[CAN_ATTACK]!=SHELL:

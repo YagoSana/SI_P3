@@ -7,8 +7,9 @@ from MyProblem.BCNode import BCNode
 from MyProblem.BCProblem import BCProblem
 from States.AgentConsts import AgentConsts
 from States.Attack import Attack
+from States.AttackShell import AttackShell
 from States.RandomMovement import RandomMovement
-from States.DistanceAttack import DistanceAttack
+
 
 #implementación de un agente básico basado en objetivos.
 #disponemos de la clase GoalMonitor que nos monitorea y replanifica cada cierto tiempo
@@ -19,8 +20,8 @@ class GoalOrientedAgent(BaseAgent):
         dictionary = {
         "ExecutePlan" : ExecutePlan("ExecutePlan"),
         "Attack" : Attack("Attack"),
-        "RandomMovement" : RandomMovement("RandomMovement"),
-        "DistanceAttack" : DistanceAttack("DistanceAttack")
+        "AttackShell" : AttackShell("AttackShell"),
+        "RandomMovement" : RandomMovement("RandomMovement")
         }
         self.stateMachine = StateMachine("GoalOrientedBehavior",dictionary,"ExecutePlan")
         self.problem = None
