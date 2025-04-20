@@ -8,6 +8,7 @@ class GoalMonitor:
     GOAL_NPC=3 #MATAR AL OTRO AGENTE PORQUE ME MOLESTA MUCHISIMO
     GOAL_COVER=4 #BUSCAR COVERTURA PARA QUE NO ME MATEN Y TAL
  
+    DISTANCE_TO = 10 #Distancia a la que el agente se siente amenazado por el jugador
 
     def __init__(self, problem, goals):
         self.goals = goals
@@ -26,7 +27,7 @@ class GoalMonitor:
             return True
         elif perception[AgentConsts.HEALTH]<2: #Vida 
             return self.goals[self.GOAL_LIFE]
-        elif abs(perception[AgentConsts.PLAYER_X]-perception[AgentConsts.AGENT_X])<6 and abs(perception[AgentConsts.PLAYER_Y]-perception[AgentConsts.AGENT_Y])<6:
+        elif abs(perception[AgentConsts.PLAYER_X]-perception[AgentConsts.AGENT_X])<self.DISTANCE_TO and abs(perception[AgentConsts.PLAYER_Y]-perception[AgentConsts.AGENT_Y])<self.DISTANCE_TO:
             return True
         if(self.ticks>20): 
             print("Replanificacion por ticks")
@@ -39,7 +40,7 @@ class GoalMonitor:
         if (perception[AgentConsts.NEIGHBORHOOD_RIGHT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_LEFT]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_UP]==AgentConsts.SHELL or perception[AgentConsts.NEIGHBORHOOD_DOWN]==AgentConsts.SHELL) and perception[AgentConsts.CAN_FIRE]==AgentConsts.SHELL:
             return self.goals[GOAL_PLAYER]
 
-        if abs(perception[AgentConsts.PLAYER_X]-perception[AgentConsts.AGENT_X])<6 and abs(perception[AgentConsts.PLAYER_Y]-perception[AgentConsts.AGENT_Y])<6:
+        if abs(perception[AgentConsts.PLAYER_X]-perception[AgentConsts.AGENT_X])<self.DISTANCE_TO and abs(perception[AgentConsts.PLAYER_Y]-perception[AgentConsts.AGENT_Y])<self.DISTANCE_TO:
             return self.goals[self.GOAL_PLAYER]
 
         elif perception[AgentConsts.HEALTH]<2: #Vida 

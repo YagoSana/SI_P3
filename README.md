@@ -1,4 +1,5 @@
 # SI_P3
+## Autores: Samuel Carrillo y Yago Sanabria 
 ---
 ## Enunciado
 ### AStar.py:
